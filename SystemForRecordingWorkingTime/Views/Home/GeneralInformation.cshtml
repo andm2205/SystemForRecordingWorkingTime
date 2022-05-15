@@ -1,0 +1,91 @@
+﻿@model IEnumerable<SystemForRecordingWorkingTime.Models.User>
+
+@{
+    ViewData["Title"] = "GeneralInformation";
+}
+
+<h1>GeneralInformation</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@if (Model == null)
+    return;
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Patronymic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DaysWorked)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnusedVacationDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllUnusedVacationDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DaysOff)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Patronymic)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DaysWorked)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnusedVacationDays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AllUnusedVacationDays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DaysOff)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SystemForRecordingWorkingTime.Models
 {
@@ -46,12 +47,13 @@ namespace SystemForRecordingWorkingTime.Models
                 && request.RequestStatus == RequestStatus.Approved)
             .Count();
 
-        public IEnumerable<Int32> GetRequestsCount(User user)
+        public Dictionary<RequestStatus, Int32> GetRequestsCount(User user)
         {
             return Requests
                 .Where(request => request.ApprovingUser == user)
                 .GroupBy(request => request.RequestStatus)
-                .Select(requests => requests.Count());
+                .Select(requests => new {Key = requests.Key, RequestsCount = requests.Count() })
+                .ToDictionary(x => x.Key, x => x.RequestsCount);
         }
     }
     public enum UserRole
@@ -61,39 +63,41 @@ namespace SystemForRecordingWorkingTime.Models
         Supervisor,
         Administrator
     }
-    public class Request
+    public abstract class Request
     {
         public RequestStatus RequestStatus { get; set; }
         public User Applicant { get; set; }
+        [Column(TypeName = "date")]
         public DateOnly CreateDate { get; set; }
+        [Column(TypeName = "date")]
         public DateOnly SubmissionDate { get; set; }
         public readonly List<DateOnly> StatedDates = new();
         public User ApprovingUser { get; set; }
         public string Comment { get; set; }
     }
-    class VacationRequest : Request
+    public class VacationRequest : Request
     {
         public VacationType VacationType { get; set; }
         public User ReplacementEmployee { get; set; }
         public Boolean Movable { get; set; }
     }
-    class DayOffAtTheExpenseOfVacationRequest : Request
+    public class DayOffAtTheExpenseOfVacationRequest : Request
     {
         User ReplacementEmployee { get; set; }
     }
 
-    class DayOffAtTheExpenseOfWorkingOutRequest : Request
+    public class DayOffAtTheExpenseOfWorkingOutRequest : Request
     {
         User ReplacementEmployee { get; set; }
         public DateOnly[] WorkingOutDates { get; set; }
     }
 
-    class DayOffRequest : Request
+    public class DayOffRequest : Request
     {
         User ReplacementEmployee { get; set; }
     }
 
-    class RemoteWorkRequest : Request
+    public class RemoteWorkRequest : Request
     {
         string[] WorkPlans { get; set; }
     }
