@@ -3,7 +3,7 @@
 namespace SystemForRecordingWorkingTime.Models
 {
     public class User
-    { 
+    {
         public String Surname { get; set; }
         public String Name { get; set; }
         public String Patronymic { get; set; }
@@ -11,25 +11,48 @@ namespace SystemForRecordingWorkingTime.Models
         public String Phone { get; set; }
         public String Email { get; set; }
         public readonly List<Request> Requests = new();
-        public UInt16 DaysWorked => 
-            Convert.ToUInt16(
-                DateTime.Now.DayOfYear - 
-                Requests.Aggregate(
-                    0, (prev, next) => prev + next.StatedDates.Where(
-                        date => date.Year == DateTime.Now.Year).Count()));
-        public UInt16 UnusedVacationDays => 
-            Convert.ToUInt16(
-                20 - Requests.Where(
-                    request => ((VacationRequest)request).VacationType == VacationType.BasicPaidLeave).Aggregate(
-                    0, (prev, next) => prev + next.StatedDates.Where(
-                        date => date.Year == DateTime.Now.Year).Count()));
+        public Int32 DaysWorked => DateTime.Now.DayOfYear - Requests
+            .Aggregate(0, (sum, request) => sum +
+                request.StatedDates
+                .Where(date => date.Year == DateTime.Now.Year)
+                .Count());
+        public Int32 UnusedVacationDays => 20 - Requests
+            .Where(
+                request => 
+                typeof(VacationRequest) == request.GetType()
+                && ((VacationRequest)request).VacationType == VacationType.BasicPaidLeave 
+                && request.RequestStatus == RequestStatus.Approved)
+            .SelectMany(request => request.StatedDates)
+            .Where(date => date.Year == DateTime.Now.Year)
+            .Count();
 
-        public UInt16 AllUnusedVacationDays =>
-            Convert.ToUInt16(Requests
-                .Where(request => ((VacationRequest)request).VacationType == VacationType.BasicPaidLeave)
-                .GroupBy(request => request.)
+        public Int32 AllUnusedVacationDays => Requests
+            .Where(
+                request =>
+                typeof(VacationRequest) == request.GetType()
+                && ((VacationRequest)request).VacationType == VacationType.BasicPaidLeave
+                && request.RequestStatus == RequestStatus.Approved)
+            .SelectMany(request => request.StatedDates)
+            .Where(date => date.Year != DateTime.Now.Year)
+            .GroupBy(date => date.Year)
+            .Aggregate(
+                0, (sum, dates) => sum + (20 - dates
+                .Count()));
 
-        //20 – {количество дней по утвержденным заявкам на отпуск типа «Основной оплачиваемый отпуск» в текущем году};
+        public Int32 DaysOff => Requests
+            .Where(
+                request =>
+                typeof(DayOffRequest) == request.GetType()
+                && request.RequestStatus == RequestStatus.Approved)
+            .Count();
+
+        public IEnumerable<Int32> GetRequestsCount(User user)
+        {
+            return Requests
+                .Where(request => request.ApprovingUser == user)
+                .GroupBy(request => request.RequestStatus)
+                .Select(requests => requests.Count());
+        }
     }
     public enum UserRole
     {
@@ -64,7 +87,13 @@ namespace SystemForRecordingWorkingTime.Models
         User ReplacementEmployee { get; set; }
         public DateOnly[] WorkingOutDates { get; set; }
     }
-    class ParentalLeaveRequest : Request
+
+    class DayOffRequest : Request
+    {
+        User ReplacementEmployee { get; set; }
+    }
+
+    class RemoteWorkRequest : Request
     {
         string[] WorkPlans { get; set; }
     }
@@ -88,28 +117,15 @@ namespace SystemForRecordingWorkingTime.Models
         [Display(Name = "Canceled")]
         Canceled
     }
-    public enum RequestType
-    {
-        [Display(Name = "Vacation")]
-        BasicPaidLeave,
-        [Display(Name = "DayOffAtTheExpenseOfVacation")]
-        DayOffAtTheExpenseOfVacation,
-        [Display(Name = "DayOffAtTheExpenseOfWorkingOut")]
-        DayOffAtTheExpenseOfWorkingOut,
-        [Display(Name = "DayOff")]
-        DayOff,
-        [Display(Name = "RemoteWork")]
-        RemoteWork
-    }
     public enum VacationType
     {
         [Display(Name = "BasicPaidLeave")]
         BasicPaidLeave,
-        [Display(Name = "SentForApproval")]
+        [Display(Name = "LeaveWithoutPay")]
         LeaveWithoutPay,
         [Display(Name = "PregnancyAndMaternityLeave")]
         PregnancyAndMaternityLeave,
         [Display(Name = "ParentalLeave")]
-        NotAgreed,
+        ParentalLeave,
     }
 }
