@@ -5,11 +5,14 @@ namespace SystemForRecordingWorkingTime.Models
 {
     public class User
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public UInt32 Id { get; set; }
         public String Surname { get; set; }
         public String Name { get; set; }
         public String Patronymic { get; set; }
-        public String Role { get; set; }
-        public String Phone { get; set; }
+        public UserRole Role { get; set; }
+        public UInt64 Phone { get; set; }
         public String Email { get; set; }
         public readonly List<Request> Requests = new();
         public Int32 DaysWorked => DateTime.Now.DayOfYear - Requests
@@ -65,6 +68,9 @@ namespace SystemForRecordingWorkingTime.Models
     }
     public abstract class Request
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public UInt32 Id { get; set; }
         public RequestStatus RequestStatus { get; set; }
         public User Applicant { get; set; }
         [Column(TypeName = "date")]
