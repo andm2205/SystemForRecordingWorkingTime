@@ -13,8 +13,9 @@ builder.Services
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
 
-/*new ModelBuilder().Entity<Request>(builder => builder.Property(x => x.))
-*/
+//new ModelBuilder().Entity<Request>(builder => builder.Property(x => x.))
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

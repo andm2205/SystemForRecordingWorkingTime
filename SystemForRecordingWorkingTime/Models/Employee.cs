@@ -14,7 +14,8 @@ namespace SystemForRecordingWorkingTime.Models
         public UserRole Role { get; set; }
         public UInt64 Phone { get; set; }
         public String Email { get; set; }
-        public readonly List<Request> Requests = new();
+        [InverseProperty("ApplicantUser")]
+        public ICollection<Request> Requests { get; set; }
         public Int32 DaysWorked => DateTime.Now.DayOfYear - Requests
             .Aggregate(0, (sum, request) => sum +
                 request.StatedDates
@@ -61,9 +62,13 @@ namespace SystemForRecordingWorkingTime.Models
     }
     public enum UserRole
     {
+        [Display(Name = "Employee")]
         Employee,
+        [Display(Name = "Director")]
         Director,
+        [Display(Name = "Supervisor")]
         Supervisor,
+        [Display(Name = "Administrator")]
         Administrator
     }
     public abstract class Request
@@ -72,40 +77,48 @@ namespace SystemForRecordingWorkingTime.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public UInt32 Id { get; set; }
         public RequestStatus RequestStatus { get; set; }
-        public User Applicant { get; set; }
+        [ForeignKey("ApplicantUser")]
+        public UInt32 ApplicantUserId { get; set; }
+        public User ApplicantUser { get; set; }
         [Column(TypeName = "date")]
         public DateOnly CreateDate { get; set; }
         [Column(TypeName = "date")]
         public DateOnly SubmissionDate { get; set; }
-        public readonly List<DateOnly> StatedDates = new();
+        public List<DateTime> StatedDates { get; set; }
+        [ForeignKey("ApprovingUser")]
+        public UInt32 ApprovingUserId { get; set; }
         public User ApprovingUser { get; set; }
         public string Comment { get; set; }
     }
     public class VacationRequest : Request
     {
         public VacationType VacationType { get; set; }
-        public User ReplacementEmployee { get; set; }
+        public UInt32 ReplacementUserId { get; set; }
+        public User ReplacementUser { get; set; }
         public Boolean Movable { get; set; }
     }
     public class DayOffAtTheExpenseOfVacationRequest : Request
     {
-        User ReplacementEmployee { get; set; }
+        public UInt32 ReplacementUserId { get; set; }
+        public User ReplacementUser { get; set; }
     }
 
     public class DayOffAtTheExpenseOfWorkingOutRequest : Request
     {
-        User ReplacementEmployee { get; set; }
-        public DateOnly[] WorkingOutDates { get; set; }
-    }
+        public UInt32 ReplacementUserId { get; set; }
+        public User ReplacementUser { get; set; }
+/*        public List<DateOnly> WorkingOutDates { get; set; }
+*/    }
 
     public class DayOffRequest : Request
     {
-        User ReplacementEmployee { get; set; }
+        public UInt32 ReplacementUserId { get; set; }
+        public User ReplacementUser { get; set; }
     }
 
     public class RemoteWorkRequest : Request
     {
-        string[] WorkPlans { get; set; }
+        public  List<String> WorkPlans { get; set; }
     }
 
     public enum RequestStatus
