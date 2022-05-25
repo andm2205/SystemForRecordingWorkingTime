@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SystemForRecordingWorkingTime.Models;
 
@@ -6,15 +7,12 @@ namespace SystemForRecordingWorkingTime
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<User> User { get; set; }
-        public DbSet<VacationRequest> VacationRequest { get; set; }
-        public DbSet<DayOffAtTheExpenseOfVacationRequest> DayOffAtTheExpenseOfVacationRequest { get; set; }
-        public DbSet<DayOffAtTheExpenseOfWorkingOutRequest> DayOffAtTheExpenseOfWorkingOutRequest { get; set; }
-        public DbSet<DayOffRequest> DayOffRequest { get; set; }
-        public DbSet<RemoteWorkRequest> RemoteWorkRequest { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Request> Requests { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void ConfigureConventions(ModelConfigurationBuilder builder)
@@ -29,6 +27,35 @@ namespace SystemForRecordingWorkingTime
                     d => d.ToDateTime(TimeOnly.MinValue),
                     d => DateOnly.FromDateTime(d))
             { }
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasData(new User 
+            { 
+                Id = -1, 
+                Email = "admin@admin.ru", 
+                Password = "nHLrqFHC8pr3cz6CdnzT",
+                RoleValue = User.Role.Administrator
+            });
+
+            modelBuilder.Entity<VacationRequest>();
+            modelBuilder.Entity<DayOffAtTheExpenseOfVacationRequest>();
+            modelBuilder.Entity<DayOffAtTheExpenseOfWorkingOutRequest>();
+            modelBuilder.Entity<DayOffRequest>();
+
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+
+            modelBuilder.Entity<Request>()
+                .HasOne(a => a.ApprovingUser)
+                .WithMany(a => a.ApprovingRequests)
+                .HasForeignKey(a => a.ApprovingUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ReplaceableRequest>()
+                .HasOne(a => a.ReplacementUser)
+                .WithMany()
+                .HasForeignKey(a => a.ReplacementUserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -1,6 +1,7 @@
 using SystemForRecordingWorkingTime;
 using Microsoft.EntityFrameworkCore;
 using SystemForRecordingWorkingTime.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +13,10 @@ builder.Services
     .AddControllersWithViews()
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
-
-//new ModelBuilder().Entity<Request>(builder => builder.Property(x => x.))
-
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => { 
+        options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Home/Login"); });
 
 var app = builder.Build();
 
@@ -27,9 +29,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Authorization}/{id?}");
+    pattern: "{controller=Home}/{action=GeneralInformation}/{id?}");
 
 app.Run();
