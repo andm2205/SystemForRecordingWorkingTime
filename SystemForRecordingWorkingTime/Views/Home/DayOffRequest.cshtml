@@ -1,32 +1,16 @@
-﻿@model SystemForRecordingWorkingTime.Models.RequestTypeChooser
+﻿@model SystemForRecordingWorkingTime.Models.DayOffRequest
 
-@{
-    ViewData["Title"] = "CreateRequest";
-}
-
-<h1>CreateRequest</h1>
-
-<h4>Request</h4>
+<h4>DayOffRequest</h4>
 <hr />
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateRequest1">
-            <div class="form-group">
-                <label class="control-label">RequestType</label>
-                <select asp-for="TypeIndex" asp-items="@ViewBag.RequestTypeList" class="form-control"></select>
-            </div>
-             <div class="form-group">
-                <input type="submit" value="Submit" class="btn btn-primary" />
-            </div>
-        </form>
-        @if (ViewBag.PartialViewName != null)
-        {
-            string a = ViewBag.PartialViewName;
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!! " + a);
-            Html.RenderPartial(a);
-        }
-        @*<form asp-action="CreateRequest">
+        <form asp-action="CreateRequest">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ReplacementUserId" class="control-label"></label>
+                <select asp-for="ReplacementUserId" class ="form-control" asp-items="ViewBag.ReplacementUserId"></select>
+            </div>
             <div class="form-group">
                 <label asp-for="RequestStatusValue" class="control-label"></label>
                 <select asp-for="RequestStatusValue" class="form-control"></select>
@@ -58,11 +42,11 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>*@
+        </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="RequestList">Back to List</a>
+    <a asp-action="Index">Back to List</a>
 </div>
 

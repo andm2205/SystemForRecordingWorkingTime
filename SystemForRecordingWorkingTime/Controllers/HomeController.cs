@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
 using System.Security.Claims;
 using SystemForRecordingWorkingTime.Models;
@@ -57,10 +58,35 @@ namespace SystemForRecordingWorkingTime.Controllers
         {
             return View(_context.Requests.AsEnumerable());
         }
+        [Authorize]
         [HttpGet]
         public IActionResult CreateRequest()
         {
-            return View(_context.Requests.Select(a => a.GetType()).Distinct());
+            ViewBag.RequestTypeList = Models.Request.MappedInheritorTypes.Select(a => new SelectListItem()
+            {
+                Text = a.Name
+            });
+            return View();
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult CreateRequest1(RequestTypeChooser requestTypeChooser)
+        {
+            var list = Models.Request.MappedInheritorTypes.Select(a => new SelectListItem()
+            {
+                Text = a.Name
+            }).ToList();
+            ViewBag.RequestTypeList = list;
+            ViewBag.PartialViewName = list[requestTypeChooser.TypeIndex].Text;
+            return View("CreateRequest");
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult CreateRequest([FromBody] Request request)
+        {
+            _context.Requests.Add(request);
+            _context.SaveChanges();
+            return RedirectToAction("RequestList");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

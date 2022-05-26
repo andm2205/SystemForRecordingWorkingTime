@@ -57,5 +57,9 @@ namespace SystemForRecordingWorkingTime
                 .HasForeignKey(a => a.ReplacementUserId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
+        public DbSet<SystemForRecordingWorkingTime.Models.DayOffAtTheExpenseOfVacationRequest>? DayOffAtTheExpenseOfVacationRequest { get; set; }
+        public DbSet<SystemForRecordingWorkingTime.Models.DayOffAtTheExpenseOfWorkingOutRequest>? DayOffAtTheExpenseOfWorkingOutRequest { get; set; }
+        public DbSet<SystemForRecordingWorkingTime.Models.DayOffRequest>? DayOffRequest { get; set; }
+        public DbSet<SystemForRecordingWorkingTime.Models.RemoteWorkRequest>? RemoteWorkRequest { get; set; }
     }
 }

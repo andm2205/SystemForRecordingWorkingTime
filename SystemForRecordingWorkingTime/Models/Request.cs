@@ -5,6 +5,16 @@ namespace SystemForRecordingWorkingTime.Models
 {
     public abstract class Request
     {
+        static public List<Type> MappedInheritorTypes
+        {
+            get => new List<Type>()
+            {
+                typeof(DayOffRequest),
+                typeof(DayOffAtTheExpenseOfVacationRequest),
+                typeof(DayOffAtTheExpenseOfWorkingOutRequest),
+                typeof(VacationRequest)
+            };
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int32 Id { get; set; }
@@ -16,13 +26,6 @@ namespace SystemForRecordingWorkingTime.Models
         public DateOnly CreateDate { get; set; }
         /*[Column(TypeName = "date")]*/
         public DateOnly SubmissionDate { get; set; }
-        public Byte DiscrimitatorId { get; set; }
-        public Discriminator DiscrimitatorValue { get; set; }
-        public class Discriminator
-        {
-            public Byte Id { get; set; }
-            public String Value { get; set; }
-        }
         public class StatedDate
         {
             [Key]
