@@ -14,7 +14,8 @@ namespace SystemForRecordingWorkingTime.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
-
+        private static String[] UserRoles =
+            Enum.GetNames(typeof(Models.User.Role));
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
@@ -29,13 +30,14 @@ namespace SystemForRecordingWorkingTime.Controllers
         public IActionResult Login(Login loginData)
         {
             User user = _context.Users.Single(a => loginData.Email == a.Email && loginData.Password == a.Password);
-            _ = Authenticate(user.Email);
+            _ = Authenticate(user);
             return RedirectToAction("GeneralInformation", "Home");
         }
         [Authorize]
         [HttpGet]
         public IActionResult GeneralInformation()
         {
+            ViewBag.User = _context.Users.Single(a => a.Email == User.Identity.Name);
             return View(_context.Users.ToList());
         }
         [Authorize]
@@ -88,23 +90,45 @@ namespace SystemForRecordingWorkingTime.Controllers
             _context.SaveChanges();
             return RedirectToAction("RequestList");
         }
+        [Authorize]
+        [HttpGet]
+        public IActionResult WorkingCalendar()
+        {
+            throw new NotImplementedException();
+        }
+        [Authorize(Roles = "Administrator, Supervisor, Director")]
+        [HttpGet]
+        public IActionResult WorkingSchedule()
+        {
+            throw new NotImplementedException();
+        }
+        [Authorize(Roles = "Administrator")]
+        [HttpGet]
+        public IActionResult ProductionCalendar()
+        {
+            throw new NotImplementedException();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        private async Task Authenticate(object userName)
+        private async Task Authenticate(User user)
         {
-            var a = Convert.ToString(userName) ?? throw new ArgumentNullException(nameof(userName));
-            var claims = new List<Claim>{new Claim(ClaimsIdentity.DefaultNameClaimType, a)};
-            ClaimsIdentity id = new ClaimsIdentity(
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleValue.ToString()),
+                new Claim(ClaimsIdentity.)
+            };
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(
                 claims, 
                 "ApplicationCookie", 
                 ClaimsIdentity.DefaultNameClaimType, 
                 ClaimsIdentity.DefaultRoleClaimType);
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme, 
-                new ClaimsPrincipal(id));
+                new ClaimsPrincipal(claimsIdentity));
         }
     }
 }

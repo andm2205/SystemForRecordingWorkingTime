@@ -24,11 +24,13 @@ namespace SystemForRecordingWorkingTime.Models
         [InverseProperty("ApprovingUser")]
         public ICollection<Request> ApprovingRequests { get; set; } = new List<Request>();
         public Int32 DaysWorked => DateTime.Now.DayOfYear - ApplicantRequests
+            .Where(request => request.ApprovingUserId == this.Id)
             .Aggregate(0, (sum, request) => sum +
                 request.StatedDates
                 .Where(date => date.Value.Year == DateTime.Now.Year)
                 .Count());
         public Int32 UnusedVacationDays => 20 - ApplicantRequests
+            .Where(request => request.ApprovingUserId == this.Id)
             .Where(
                 request =>
                 typeof(VacationRequest) == request.GetType()
@@ -39,6 +41,7 @@ namespace SystemForRecordingWorkingTime.Models
             .Count();
 
         public Int32 AllUnusedVacationDays => ApplicantRequests
+            .Where(request => request.ApprovingUserId == this.Id)
             .Where(
                 request =>
                 typeof(VacationRequest) == request.GetType()
@@ -50,22 +53,19 @@ namespace SystemForRecordingWorkingTime.Models
             .Aggregate(
                 0, (sum, dates) => sum + (20 - dates
                 .Count()));
-
-        public Int32 DaysOff => ApplicantRequests
+        public Int32 DaysOff=> ApplicantRequests
+            .Where(request => request.ApprovingUserId == this.Id)
             .Where(
                 request =>
                 typeof(DayOffRequest) == request.GetType()
                 && request.RequestStatusValue == Request.RequestStatus.Approved)
             .Count();
 
-        public Dictionary<Request.RequestStatus, Int32> GetRequestsCount(User user)
-        {
-            return ApplicantRequests
-                .Where(request => request.ApprovingUser == user)
-                .GroupBy(request => request.RequestStatusValue)
-                .Select(requests => new {Key = requests.Key, RequestsCount = requests.Count() })
-                .ToDictionary(x => x.Key, x => x.RequestsCount);
-        }
+        public Dictionary<Request.RequestStatus, Int32> RequestCountByStatus => ApplicantRequests
+            .Where(request => request.ApprovingUserId == this.Id)
+            .GroupBy(request => request.RequestStatusValue)
+            .Select(requests => new {Key = requests.Key, RequestsCount = requests.Count() })
+            .ToDictionary(x => x.Key, x => x.RequestsCount);
         public enum Role
         {
             [Display(Name = "Employee")]

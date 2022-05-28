@@ -22,25 +22,22 @@ namespace SystemForRecordingWorkingTime.Models
         [ForeignKey("ApplicantUser")]
         public Int32 ApplicantUserId { get; set; }
         public User ApplicantUser { get; set; }
-        /*[Column(TypeName = "date")]*/
         public DateOnly CreateDate { get; set; }
-        /*[Column(TypeName = "date")]*/
         public DateOnly SubmissionDate { get; set; }
-        public class StatedDate
-        {
-            [Key]
-            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-            public Int32 Id { get; set; }
-            /*[Column(TypeName = "date")]*/
-            public DateOnly Value { get; set; }
-            public Int32 RequestId { get; set; }
-            public Request Request { get; set; }
-        }
         public ICollection<StatedDate> StatedDates { get; set; }
         [ForeignKey("ApprovingUser")]
         public Int32 ApprovingUserId { get; set; }
         public User ApprovingUser { get; set; }
         public string Comment { get; set; }
+        public class StatedDate
+        {
+            [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+            public Int32 Id { get; set; }
+            public DateOnly Value { get; set; }
+            public Int32 RequestId { get; set; }
+            public Request Request { get; set; }
+        }
         public enum RequestStatus
         {
             [Display(Name = "New")]
