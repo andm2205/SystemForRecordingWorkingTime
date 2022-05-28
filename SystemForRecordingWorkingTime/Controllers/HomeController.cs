@@ -118,8 +118,7 @@ namespace SystemForRecordingWorkingTime.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleValue.ToString()),
-                new Claim(ClaimsIdentity.)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleValue.ToString())
             };
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
                 claims, 
