@@ -1,20 +1,25 @@
 ﻿@model IEnumerable<SystemForRecordingWorkingTime.Models.Request>
 
 @{
-    ViewData["Title"] = "RequestsList";
+    ViewData["Title"] = "Request list";
     
 }
 
-<h1>RequestsList</h1>
+<h1>Request list</h1>
 
 <p>
-    <a asp-action="CreateRequest">Create New</a>
+    <a asp-action="CreateRequest">Create new</a>
 </p>
+
+<form id="sortingAndFiltering" method="post" action="/Home/RequestList">
+    <input form="sortingAndFiltering" type="submit" value="Sorting and filtering" class="btn btn-primary"/>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.RequestStatusValue)
+                @Html.DisplayNameFor(model => model.RequestStatus)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ApplicantUser)
@@ -34,6 +39,113 @@
             <th>
                 Type
             </th>
+            <th>
+                Replace user
+            </th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>
+                <select form="sortingAndFiltering" name="RequestStatus">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Select(a => a.RequestStatus).Distinct()){<option value="@((int)a)">@a</option>}
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ApplicantUserEmail">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Select(a => a.ApplicantUser.Email).Distinct()){<option value="@(a)">@a</option>}
+                </select>
+            </th>
+            <th>
+                <input  form="sortingAndFiltering" name="CreateDate" type="date" />
+            </th>
+            <th>
+                <input form="sortingAndFiltering" name="SubmissionDate" type="date" />
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ApprovingUserEmail">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Select(a => a.ApprovingUser.Email).Distinct()){<option value="@(a)">@a</option>}
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="Comment">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Select(a => a.Comment).Distinct()){<option value="@(a)">@a</option>}
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="TypeName">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Select(a => a.GetType().Name).Distinct()){<option value="@(a)">@a</option>}
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ReplacementUserEmail">
+                    <option value="">All</option>
+                    @foreach(var a in Model.Where(a => a is ReplacebleRequest).Select(a => ((ReplacebleRequest)a).ReplacementUser?.Email).Distinct()){<option value="@(a)">@a</option>}
+                </select>
+            </th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>
+                <select form="sortingAndFiltering" name="RequestStatusSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ApplicantUserEmailSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="CreateDateSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="SubmissionDateSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ApprovingUserEmailSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="CommentSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="TypeNameSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
+            <th>
+                <select form="sortingAndFiltering" name="ReplacementUserEmailSort">
+                    <option>None</option>
+                    <option>Asc</option>
+                    <option>Desc</option>
+                </select>
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -41,16 +153,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.RequestStatusValue)
+                @Html.DisplayFor(modelItem => item.RequestStatus)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ApplicantUser.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
+                @item.CreateDate.ToString("yyyy-MM-dd")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SubmissionDate)
+                @(item.SubmissionDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ApprovingUser.Email)
@@ -59,12 +171,45 @@
                 @Html.DisplayFor(modelItem => item.Comment)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GetType().Name)
+                @Html.DisplayFor(modelItem => item.Discriminator)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @{
+                        if(item is ReplacebleRequest)
+                        {
+                            @(((ReplacebleRequest)item).ReplacementUser?.Email)
+                        }
+                    }
+            </td>
+            <td>
+                <a asp-action="WorkingSchedule" asp-route-id="@item.Id">График</a>
+                <a asp-action="WorkingCalendar" asp-route-id="@item.Id">Календарь</a>
+                @{
+                    if (new[] { RequestStatus.New, RequestStatus.Withdrawn }.Contains(item.RequestStatus)
+                    && item.ApplicantUser.Email == User.Identity.Name)
+                    {
+                        <a asp-action="SendForApprovalRequest" asp-route-id="@item.Id">Отправить</a>
+                        <a asp-action="EditRequestView" asp-route-id="@item.Id">Редактировать</a>
+                    }
+                    if (new[] { RequestStatus.SentForApproval }.Contains(item.RequestStatus)
+                    && item.ApplicantUser.Email == User.Identity.Name)
+                    {
+                        <a asp-action="WithdrawRequest" asp-route-id="@item.Id">Отозвать</a>
+                    }
+                    if(item.StatedDates.Any(a => a.Value < DateOnly.FromDateTime(DateTime.Now))
+                    && item.ApplicantUser.Email == User.Identity.Name)
+                    {
+                        <a asp-action="CancelRequest" asp-route-id="@item.Id">Отменить</a>
+                    }
+                    if(new[] { RequestStatus.SentForApproval }.Contains(item.RequestStatus) && item.ApprovingUser.Email == User.Identity.Name)
+                    {
+                        <a asp-action="AgreeRequest" asp-route-id="@item.Id">Согласовать</a>
+                    }
+                    if(new[] { RequestStatus.Agreed }.Contains(item.RequestStatus) && User.IsInRole("Director"))
+                    {
+                        <a asp-action="ApproveRequest" asp-route-id="@item.Id">Утвердить</a>
+                    }
+                }
             </td>
         </tr>
 }

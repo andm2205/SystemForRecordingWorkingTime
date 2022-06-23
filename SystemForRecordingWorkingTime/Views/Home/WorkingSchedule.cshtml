@@ -1,0 +1,117 @@
+﻿@model SystemForRecordingWorkingTime.Models.WorkingSchedule
+
+@{
+    ViewData["Title"] = "WorkingSchedule";
+    DayOfWeek[] weekends = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
+}
+
+<h1>WorkingSchedule</h1>
+
+<style>
+    table{
+        
+    }
+    table p{
+        margin-bottom: 0;
+    }
+    table td, table th
+    {
+        border: 1px solid black;
+    }
+</style>
+
+<form method="post" asp-action="WorkingSchedule">
+    <label>Number of month
+        <input name="Month" type="number" value="@ViewBag.Filter.Month" />
+    </label>
+    <label>Year
+        <input name="Year" type="number" value="@ViewBag.Filter.Year" />
+    </label>
+    <label>User Email
+        <select multiple name="UserEmails">
+            @foreach(var userEmail in ViewBag.Filter.UserEmails)
+            {
+                <option value="@userEmail">@userEmail</option>
+            }
+        </select>
+    </label>
+    <input type="submit" value="Submit" />
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Users</th>
+            @for(DateOnly dateCol = new DateOnly(Model.Year, Model.Month, 1); dateCol.Month == Model.Month; dateCol = dateCol.AddDays(1))
+            {
+                <th>@dateCol.Day</th>
+            }
+        </tr>
+    </thead>
+    @{
+        foreach(var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Email</td>
+                @for(DateOnly dateCol = new DateOnly(Model.Year, Model.Month, 1); dateCol.Month == Model.Month; dateCol = dateCol.AddDays(1))
+                {
+                    <td>
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a =>
+                                a.CreateDate == dateCol
+                                && a.ApplicantUserId == user.Id))
+                        {
+                            <div>
+                                <p>Request</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is DayOffAtTheExpenseOfWorkingOutRequest 
+                                && a.ApplicantUserId.Value == user.Id
+                                && ((DayOffAtTheExpenseOfWorkingOutRequest)a).WorkingOutDates.Any(a => a.Value == dateCol)))
+                        {
+                            <div>
+                                <p>WorkingOut</p>
+                                <p>RequestType=@request.Discriminator</p>
+                                <p>RequestStatus=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is ReplacebleRequest 
+                                && a.ApplicantUserId.Value == user.Id
+                                && ((ReplacebleRequest)a).StatedDates.Any(a => a.Value == dateCol)))
+                        {
+                            <div>
+                                <p>ReplaceApplicant</p>
+                                <p>ReplacementUserEmail=@(((ReplacebleRequest)request).ReplacementUser.Email)</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is ReplacebleRequest 
+                                && ((ReplacebleRequest)a).ReplacementUserId.Value == user.Id
+                                && a.StatedDates.Any(a => a.Value == dateCol)))
+                        {
+                            <div>
+                                <p>ReplacementUser</p>
+                                <p>CreateUserEmail=@(request.ApplicantUser.Email)</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    }
+</table>

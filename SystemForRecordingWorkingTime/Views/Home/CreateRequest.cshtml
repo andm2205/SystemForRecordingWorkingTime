@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "CreateRequest";
+    ViewBag.ActionName = "Create";
 }
 
 <h1>CreateRequest</h1>
@@ -10,10 +11,10 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateRequest1">
+        <form asp-action="CreateRequestOfType">
             <div class="form-group">
                 <label class="control-label">RequestType</label>
-                <select asp-for="TypeIndex" asp-items="@ViewBag.RequestTypeList" class="form-control"></select>
+                <select asp-for="TypeIndex" asp-items="Html.GetEnumSelectList<Request.MappedInheritorTypesEnum>()" class="form-control">@ViewBag.User?.Role</select>
             </div>
              <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />
@@ -21,7 +22,7 @@
         </form>
         @if (ViewBag.PartialViewName != null)
         {
-            Html.RenderPartial((string)ViewBag.PartialViewName);
+            @await Html.PartialAsync((string)ViewBag.PartialViewName);
         }
     </div>
 </div>
@@ -29,4 +30,12 @@
 <div>
     <a asp-action="RequestList">Back to List</a>
 </div>
-
+<script>
+    const addStatedDate = function () 
+    {
+        event.preventDefault();
+        let data = document.getElementById('datesList').value.split(',').filter(Boolean);
+        data.push(document.forms.mainForm.dateValue.value.toString())
+        document.getElementById('datesList').value = data;
+    };
+</script>

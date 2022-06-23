@@ -1,0 +1,118 @@
+﻿@model SystemForRecordingWorkingTime.Controllers.HomeController.FilterData
+
+@*<tr>
+    @await Html.PartialAsync("ListSettingRequestStatus", Model.RequestStatus);
+    @await Html.PartialAsync("ListSettingString", Model.ApplicantUserEmail);
+    @await Html.PartialAsync("ListSettingDateTime", Model.CreateDate);
+    @await Html.PartialAsync("ListSettingDateTime", Model.SubmissionDate);
+    @await Html.PartialAsync("ListSettingString", Model.ApprovingUserEmail);
+    @await Html.PartialAsync("ListSettingString", Model.Comment);
+    @await Html.PartialAsync("ListSettingString", Model.TypeName);
+    @await Html.PartialAsync("ListSettingString", Model.ReplacementUserEmail);
+
+</tr>*@
+
+@*<tr>
+    <th>
+        <select form="sortingAndFiltering" name="RequestStatus">
+            <option value="">All</option>
+            @foreach(var a in Model.Select(a => a.RequestStatus).Distinct()){<option value="@((int)a)">@a</option>}
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ApplicantUserEmail">
+            <option value="">All</option>
+            @foreach(var a in Model.Select(a => a.ApplicantUser.Email).Distinct()){<option value="@(a)">@a</option>}
+        </select>
+    </th>
+    <th>
+        <input  form="sortingAndFiltering" name="CreateDate" type="date" />
+    </th>
+    <th>
+        <input form="sortingAndFiltering" name="SubmissionDate" type="date" />
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ApprovingUserEmail">
+            <option value="">All</option>
+            @foreach(var a in Model.Select(a => a.ApprovingUser.Email).Distinct()){<option value="@(a)">@a</option>}
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="Comment">
+            <option value="">All</option>
+            @foreach(var a in Model.Select(a => a.Comment).Distinct()){<option value="@(a)">@a</option>}
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="TypeName">
+            <option value="">All</option>
+            @foreach(var a in Model.Select(a => a.GetType().Name).Distinct()){<option value="@(a)">@a</option>}
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ReplacementUserEmail">
+            <option value="">All</option>
+            @foreach(var a in Model.Where(a => a is ReplacebleRequest).Select(a => ((ReplacebleRequest)a).ReplacementUser?.Email).Distinct()){<option value="@(a)">@a</option>}
+        </select>
+    </th>
+    <th></th>
+</tr>
+<tr>
+    <th>
+        <select form="sortingAndFiltering" name="RequestStatusSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ApplicantUserEmailSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="CreateDateSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="SubmissionDateSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ApprovingUserEmailSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="CommentSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="TypeNameSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th>
+        <select form="sortingAndFiltering" name="ReplacementUserEmailSort">
+            <option>None</option>
+            <option>Asc</option>
+            <option>Desc</option>
+        </select>
+    </th>
+    <th></th>
+</tr>*@

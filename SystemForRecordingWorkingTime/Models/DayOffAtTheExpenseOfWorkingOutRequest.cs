@@ -1,19 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SystemForRecordingWorkingTime.Models
 {
-    public class DayOffAtTheExpenseOfWorkingOutRequest : ReplaceableRequest
+    public class DayOffAtTheExpenseOfWorkingOutRequest : ReplacebleRequest
     {
+        public DayOffAtTheExpenseOfWorkingOutRequest() { }
+        public DayOffAtTheExpenseOfWorkingOutRequest
+            (CreateDayOffAtTheExpenseOfWorkingOutRequest data, User user, ApplicationDbContext dbContext) 
+            : base(data, user, dbContext)
+        { }
         public IEnumerable<WorkingOutDate> WorkingOutDates { get; set; }
-        public class WorkingOutDate
+
+        public override CreateDayOffAtTheExpenseOfWorkingOutRequest GetData()
         {
-            [Key]
-            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-            public Int32 Id { get; set; }
-            public DateOnly Value { get; set; }
-            public Int32 DayOffAtTheExpenseOfWorkingOutRequestId { get; set; }
-            public DayOffAtTheExpenseOfWorkingOutRequest DayOffAtTheExpenseOfWorkingOutRequest { get; set; }
+            return new CreateDayOffAtTheExpenseOfWorkingOutRequest(this);
         }
     }
 }

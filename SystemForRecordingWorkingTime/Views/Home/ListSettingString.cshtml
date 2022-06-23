@@ -1,0 +1,9 @@
+﻿@model SystemForRecordingWorkingTime.Controllers.HomeController.RequestListSettings.ListSetting<String>
+
+<th>
+    <select 
+    form="sortingAndFiltering" 
+    asp-items="new SelectList(Model.SelectableFilterValues)" 
+    asp-for="FilterValue">
+    </select>
+</th>

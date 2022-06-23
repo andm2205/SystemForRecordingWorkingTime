@@ -1,0 +1,9 @@
+﻿@model SystemForRecordingWorkingTime.Controllers.HomeController.RequestListSettings.ListSetting<RequestStatus>
+
+<th>
+    <select 
+    form="sortingAndFiltering" 
+    asp-items="Html.GetEnumSelectList<RequestStatus>()" 
+    asp-for="FilterValue">
+    </select>
+</th>

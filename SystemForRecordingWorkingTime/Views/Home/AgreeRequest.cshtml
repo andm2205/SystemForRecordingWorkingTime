@@ -1,0 +1,53 @@
+﻿@model SystemForRecordingWorkingTime.Models.AgreeRequest
+
+<form name="mainForm" asp-action="AgreeRequest">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input asp-for="RequestId" type="hidden"/>
+    <input asp-for="Movable" type="hidden"/>
+    <input asp-for="Replaceble" type="hidden"/>
+    <div class="form-group">
+        <select asp-for="Status">
+            @foreach(var a in AgreeRequest.RequestStatusValues){<option value="@((int)a)">@a</option>}
+        </select>
+    </div>
+    @if(Model.Replaceble)
+    {
+        <div class="form-group">
+            <label asp-for="ReplacementUserEmail" class="control-label"></label>
+            <input asp-for="ReplacementUserEmail" class="form-control" />
+            <span asp-validation-for="ReplacementUserEmail" class="text-danger"></span>
+        </div>
+    }
+    @if(Model.Movable)
+    {
+        <div class="form-group">
+            <input name="dateValue" type="date" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="StatedDatesList" class="control-label"></label>
+            <input id="datesList" asp-for="StatedDatesList" class="form-control" />
+            <span asp-validation-for="StatedDatesList" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="button" value="AddDate" onclick="return addStatedDate();" class="btn btn-primary" />
+        </div>
+    }
+    <div class="form-group">
+        <label asp-for="Comment" class="control-label"></label>
+        <input asp-for="Comment" class="form-control" />
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+<script>
+    let dates = [];
+    const addStatedDate = function () 
+    {
+        event.preventDefault();
+        dates[dates.length] = document.forms.mainForm.dateValue.value;
+        document.getElementById('datesList').value = dates.toString();
+    };
+</script>

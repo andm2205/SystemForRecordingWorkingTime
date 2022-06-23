@@ -1,61 +1,48 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SystemForRecordingWorkingTime.Models
 {
     public abstract class Request
     {
-        static public List<Type> MappedInheritorTypes
+        static public IEnumerable<MappedInheritorTypesEnum> MappedInheritorTypesList
         {
-            get => new List<Type>()
-            {
-                typeof(DayOffRequest),
-                typeof(DayOffAtTheExpenseOfVacationRequest),
-                typeof(DayOffAtTheExpenseOfWorkingOutRequest),
-                typeof(VacationRequest)
-            };
+            get => Enum.GetValues(typeof(MappedInheritorTypesEnum)).Cast<MappedInheritorTypesEnum>();
+        }
+        public enum MappedInheritorTypesEnum
+        {
+            DayOffRequest = 0,
+            DayOffAtTheExpenseOfVacationRequest,
+            DayOffAtTheExpenseOfWorkingOutRequest,
+            VacationRequest,
+            RemoteWorkRequest
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int32 Id { get; set; }
-        public RequestStatus RequestStatusValue { get; set; }
+        public RequestStatus RequestStatus { get; set; }
         [ForeignKey("ApplicantUser")]
-        public Int32 ApplicantUserId { get; set; }
-        public User ApplicantUser { get; set; }
+        public Int32? ApplicantUserId { get; set; }
+        public User? ApplicantUser { get; set; }
         public DateOnly CreateDate { get; set; }
-        public DateOnly SubmissionDate { get; set; }
-        public ICollection<StatedDate> StatedDates { get; set; }
+        public DateOnly? SubmissionDate { get; set; }
+        public IEnumerable<StatedDate> StatedDates { get; set; }
         [ForeignKey("ApprovingUser")]
-        public Int32 ApprovingUserId { get; set; }
-        public User ApprovingUser { get; set; }
-        public string Comment { get; set; }
-        public class StatedDate
+        public Int32? ApprovingUserId { get; set; }
+        public User? ApprovingUser { get; set; }
+        public String? Comment { get; set; }
+        public String Discriminator { get; set; }
+        public Request() { }
+        public Request(CreateRequest data, User user, ApplicationDbContext dbContext)
         {
-            [Key]
-            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-            public Int32 Id { get; set; }
-            public DateOnly Value { get; set; }
-            public Int32 RequestId { get; set; }
-            public Request Request { get; set; }
+            this.RequestStatus = RequestStatus.New;
+            this.ApplicantUserId = user.Id;
+            this.CreateDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+            this.ApprovingUserId = dbContext.Users.Single(a => a.Email == data.ApprovingUserEmail).Id;
+            this.Comment = data.Comment;
         }
-        public enum RequestStatus
-        {
-            [Display(Name = "New")]
-            New,
-            [Display(Name = "SentForApproval")]
-            SentForApproval,
-            [Display(Name = "Agreed")]
-            Agreed,
-            [Display(Name = "NotAgreed")]
-            NotAgreed,
-            [Display(Name = "Approved")]
-            Approved,
-            [Display(Name = "NotApproved")]
-            NotApproved,
-            [Display(Name = "Withdrawn")]
-            Withdrawn,
-            [Display(Name = "Canceled")]
-            Canceled
-        }
+        public abstract CreateRequest GetData();
     }
 }

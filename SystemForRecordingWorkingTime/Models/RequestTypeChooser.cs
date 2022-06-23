@@ -5,6 +5,6 @@ namespace SystemForRecordingWorkingTime.Models
     [NotMapped]
     public class RequestTypeChooser
     {
-        public Int32 TypeIndex { get; set; }
+        public Request.MappedInheritorTypesEnum TypeIndex { get; set; }
     }
 }

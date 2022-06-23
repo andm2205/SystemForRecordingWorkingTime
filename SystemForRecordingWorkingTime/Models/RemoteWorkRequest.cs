@@ -1,19 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SystemForRecordingWorkingTime.Models
 {
     public class RemoteWorkRequest : Request
     {
+        public RemoteWorkRequest() { }
+        public RemoteWorkRequest(CreateRemoteWorkRequest data, User user, ApplicationDbContext dbContext) 
+            : base(data, user, dbContext)
+        { }
         public IEnumerable<WorkPlan> WorkPlans { get; set; }
-        public class WorkPlan
+
+        public override CreateRemoteWorkRequest GetData()
         {
-            [Key]
-            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-            public Int32 Id { get; set; }
-            public String Value { get; set; }
-            public Int32 RemoteWorkRequestId { get; set; }
-            public RemoteWorkRequest RemoteWorkRequest { get; set; }
+            return new CreateRemoteWorkRequest(this);
         }
     }
 }

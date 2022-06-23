@@ -1,0 +1,147 @@
+﻿@model SystemForRecordingWorkingTime.Models.WorkingCalendar
+
+@{
+    ViewData["Title"] = "WorkingCalendar";
+    DayOfWeek[] weekends = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
+}
+
+<h1>WorkingCalendar</h1>
+
+
+<style>
+    table{
+        
+    }
+    table p{
+        margin-bottom: 0;
+    }
+    table td, table th
+    {
+        border: 1px solid black;
+    }
+</style>
+
+<form method="post" asp-action="WorkingCalendar">
+    <label>Number of month
+        <input name="Month" type="number" value="@ViewBag.Filter.Month" />
+    </label>
+    <label>Year
+        <input name="Year" type="number" value="@ViewBag.Filter.Year" />
+    </label>
+    <label>User Email
+        <input name="UserEmail" value="@ViewBag.Filter.UserEmail" />
+    </label>
+    <input type="submit" value="Submit" />
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+        </tr>
+    </thead>
+    @{
+        DateOnly date = new DateOnly(Model.Year, Model.Month, 1);
+        while(date.Month == Model.Month)
+        {
+            <tr>
+                @for (int a = 0; a < 7; ++a)
+                {
+                    <td>
+                        @if (((((int)date.DayOfWeek) + 6) % 7) != (a % 7))
+                            continue;
+                        <p>@date.Day</p>
+                        <p>@(weekends.Contains(date.DayOfWeek) ? "Weekend" : "Weekday")</p>
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a =>
+                                a.CreateDate == date
+                                && a.ApplicantUserId.Value == Model.UserId))
+                        {
+                            <div>
+                                <p>Request</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is DayOffAtTheExpenseOfWorkingOutRequest 
+                                && a.ApplicantUserId.Value == Model.UserId
+                                && ((DayOffAtTheExpenseOfWorkingOutRequest)a).WorkingOutDates.Any(a => a.Value == date)))
+                        {
+                            <div>
+                                <p>WorkingOut</p>
+                                <p>RequestType=@request.Discriminator</p>
+                                <p>RequestStatus=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is ReplacebleRequest 
+                                && a.ApplicantUserId.Value == Model.UserId
+                                && ((ReplacebleRequest)a).StatedDates.Any(a => a.Value == date)))
+                        {
+                            <div>
+                                <p>ReplaceApplicant</p>
+                                <p>ReplacementUserEmail=@(((ReplacebleRequest)request).ReplacementUser.Email)</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                        @foreach(var request in Model.Requests
+                            .Where(
+                                a => 
+                                a is ReplacebleRequest 
+                                && ((ReplacebleRequest)a).ReplacementUserId.Value == Model.UserId
+                                && a.StatedDates.Any(a => a.Value == date)))
+                        {
+                            <div>
+                                <p>ReplacementUser</p>
+                                <p>CreateUserEmail=@(request.ApplicantUser.Email)</p>
+                                <p>Type=@request.Discriminator</p>
+                                <p>Status=@request.RequestStatus</p>
+                            </div>
+                        }
+                    </td>
+                    date = date.AddDays(1);
+                }
+            </tr>
+        }
+    }
+</table>
+
+@{
+    DateOnly startDate = new DateOnly(Model.Year, Model.Month, 1);
+    DateOnly endDate = startDate.AddMonths(1);
+    Int32 weekdaysCount = 0;
+    for (; startDate < endDate; startDate = startDate.AddDays(1))
+        if(!weekends.Contains(startDate.DayOfWeek))
+            ++weekdaysCount;
+    Int32 daysWorked =
+        Model.Requests
+            .Select(a => a.StatedDates.Count(b => b.Value.Month == Model.Month))
+            .Sum()
+        + Model.Requests
+            .Where(a => a is DayOffAtTheExpenseOfWorkingOutRequest)
+            .Select(
+                a =>
+                ((DayOffAtTheExpenseOfWorkingOutRequest)a).WorkingOutDates
+                .Count(
+                    a =>
+                    a.Value.Month == Model.Month
+                    && weekends.Contains(a.Value.DayOfWeek)))
+            .Sum();
+}
+
+<p>Count of weekdays = @weekdaysCount</p>
+<p>Count of days worked = @(weekdaysCount - daysWorked)</p>
+<p>Count of days off = @daysWorked</p>

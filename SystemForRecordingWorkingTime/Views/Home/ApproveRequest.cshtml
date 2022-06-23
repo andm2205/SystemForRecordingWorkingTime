@@ -1,0 +1,14 @@
+﻿@model SystemForRecordingWorkingTime.Models.AgreeRequest
+
+<form name="mainForm" asp-action="ApproveRequest">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input asp-for="RequestId" type="hidden"/>
+    <div class="form-group">
+        <select asp-for="Status">
+            @foreach(var a in ApproveRequest.RequestStatusValues){<option value="@((int)a)">@a</option>}
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>

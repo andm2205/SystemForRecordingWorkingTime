@@ -24,12 +24,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" value="admin@admin.ru" />
+                <input asp-for="Email" class="form-control" value="admin@app.ru" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" value="nHLrqFHC8pr3cz6CdnzT" />
+                <input asp-for="Password" class="form-control" value="Ca4NCtwT5QAXPNFZ" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -37,6 +37,9 @@
             </div>
         </form>
     </div>
+</div>
+<div>
+    <a asp-action="Registration">I don't have a password</a>
 </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

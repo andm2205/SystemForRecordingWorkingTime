@@ -1,0 +1,49 @@
+﻿@model SystemForRecordingWorkingTime.Models.ProductionCalendar
+
+<h1>CreateProductionRequest</h1>
+
+<form id="mainForm" asp-action="EditProductionCalendar">
+    <input type="hidden" asp-for="Id" />
+    <lable asp-for="Month"></lable>
+    <input readonly="readonly" asp-for="Month" />
+    <lable asp-for="Year"></lable>
+    <input readonly="readonly" asp-for="Year" />
+    <input type="submit" value="Create" />
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+        </tr>
+    </thead>
+    
+    @{
+        {
+            for(int a = 0; a < Model.Days.Count(); )
+            {
+                <tr>
+                    @for(int b = 0; b < 7 && a < Model.Days.Count(); ++b)
+                    {
+                        <td>
+                            @if(((((Int32)Model.Days[a].Date.DayOfWeek) + 6) % 7) != b)
+                                continue;
+                            <p>@Model.Days[a].Date.Day</p>
+                            <input form="mainForm" asp-for="Days[a].Id" type="hidden" />
+                            <input form="mainForm" asp-for="Days[a].ProductionCalendarId" type="hidden" />
+                            <input form="mainForm" asp-for="Days[a].DateString" type="hidden" />
+                            <select form="mainForm" asp-for="Days[a].Type" asp-items="@Html.GetEnumSelectList<DayType>()"></select>
+                        </td>
+                        ++a;
+                    }
+                </tr>
+            }
+        }
+    }
+</table>

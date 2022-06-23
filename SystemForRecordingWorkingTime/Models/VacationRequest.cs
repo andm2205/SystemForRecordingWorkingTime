@@ -1,22 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SystemForRecordingWorkingTime.Models
 {
-    public class VacationRequest : ReplaceableRequest
+    public partial class VacationRequest : ReplacebleRequest
     {
-        public VacationType VacationTypeValue { get; set; }
-        public Boolean Movable { get; set; }
-        public enum VacationType
+        public VacationRequest() { }
+        public VacationRequest
+            (CreateVacationRequest data, User user, ApplicationDbContext dbContext) 
+            : base(data, user, dbContext)
         {
-            [Display(Name = "BasicPaidLeave")]
-            BasicPaidLeave,
-            [Display(Name = "LeaveWithoutPay")]
-            LeaveWithoutPay,
-            [Display(Name = "PregnancyAndMaternityLeave")]
-            PregnancyAndMaternityLeave,
-            [Display(Name = "ParentalLeave")]
-            ParentalLeave,
+            this.VacationTypeValue = data.VacationTypeValue;
+            this.Movable = data.Movable;
+        }
+        public VacationType VacationTypeValue { get; set; }
+        public Boolean? Movable { get; set; }
+        public override CreateVacationRequest GetData()
+        {
+            return new CreateVacationRequest(this);
         }
     }
 }

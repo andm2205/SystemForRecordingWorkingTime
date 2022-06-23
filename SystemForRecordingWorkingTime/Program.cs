@@ -16,11 +16,15 @@ builder.Services
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => { 
-        options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Home/Login"); });
+        options.LoginPath = new PathString("/Home/Login"); });
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
