@@ -1,5 +1,6 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
 }
 
 @media (min-width: 768px) {
@@ -8,11 +9,15 @@ html {
   }
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+html, body {
+    height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+body>.container{
+    flex-grow: 1;
 }

@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "ProductionCalendar";
+}
+
+<h1>ProductionCalendar</h1>
+
+<form method="get">
+    <lable>Year
+        <input name="year" />
+    </lable>
+    <lable>Month
+        <input name="month" />
+    </lable>
+    <input type="submit" asp-action="CreateProductionCalendar" value="Create Calendar" />
+    <input type="submit" asp-action="EditProductionCalendar" value="Edit Calendar" />
+    <input type="submit" asp-action="ActivateCalendar" value="Activate Calendar" />
+</form>
+<form method="get" >
+</form>

@@ -1,0 +1,68 @@
+﻿@model SystemForRecordingWorkingTime.Models.EditUser
+
+<div class="col-3">
+    <form asp-action="EditUser">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <input readonly="readonly" value="@ViewBag.User.Surname" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input readonly="readonly" value="@ViewBag.User.Name" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input readonly="readonly" value="@ViewBag.User.Patronymic" class="form-control" />
+        </div>
+        <div class="form-group">
+            <select disabled="disabled" asp-items="Html.GetEnumSelectList<UserRole>()" class="form-control">@ViewBag.User.Role</select>
+        </div>
+        <div class="form-group">
+                @if(ViewBag.CurrentUser != null && ViewBag.CurrentUser == true) 
+                {
+                    <label asp-for="Phone" class="control-label"></label>
+                    <input asp-for="Phone"  value="@ViewBag.User.Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                } 
+                else
+                {
+                    <input readonly="readonly" value="@ViewBag.User.Phone" class="form-control" />
+                }
+        </div>
+        <div class="form-group">
+            @if(ViewBag.CurrentUser != null && ViewBag.CurrentUser == true) 
+            {
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" value="@ViewBag.User.Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            }
+            else
+            {
+                <input readonly="readonly" value="@ViewBag.User.Email" class="form-control" />
+            }
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Edit" class="btn btn-primary" />
+        </div>
+    </form>
+    <table>
+        <tr>
+            <td>DaysWorked</td>
+            <td>@ViewBag.User.DaysWorked</td>
+        </tr>
+        <tr>
+            <td>UnusedVacationDays</td>
+            <td>@ViewBag.User.UnusedVacationDays</td>
+        </tr>
+        <tr>
+            <td>AllUnusedVacationDays</td>
+            <td>@ViewBag.User.AllUnusedVacationDays</td>
+        </tr>
+        <tr>
+            <td>DaysOff</td>
+            <td>@ViewBag.User.DaysOff</td>
+        </tr>
+        <tr>
+            <td>RequestCountByStatus</td>
+            <td>@(((SystemForRecordingWorkingTime.Models.User)ViewBag.User).RequestCountByStatus.Count)</td>
+        </tr>
+    </table>
+</div>

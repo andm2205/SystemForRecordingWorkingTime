@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "EditRequest";
+    ViewBag.ActionName = "Edit";
+}
+
+<h1>EditRequest</h1>
+
+<h4>Request</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @await Html.PartialAsync((string)ViewBag.PartialViewName)
+    </div>
+</div>
+
+<div>
+    <a asp-action="RequestList">Back to List</a>
+</div>
+<script>
+    const addStatedDate = function () 
+    {
+        event.preventDefault();
+        let data = document.getElementById('datesList').value.split(',').filter(Boolean);
+        data.push(document.forms.mainForm.dateValue.value.toString())
+        document.getElementById('datesList').value = data;
+    };
+</script>

@@ -1,0 +1,68 @@
+﻿@model IEnumerable<SystemForRecordingWorkingTime.Models.User>
+
+@{
+    ViewData["Title"] = "User information";
+}
+
+<h1>User information</h1>
+
+@if(User.IsInRole("Administrator"))
+{
+    <p>
+        <a asp-action="CreateUser">Create new</a>
+    </p>
+}
+@if (Model == null)
+    return;
+<div class="row flex-nowrap">
+    <div class="col">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Surname)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Role)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Surname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "GeneralInformation", new {email = item.Email})
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+    @if(User.IsInRole("Administrator"))
+    {
+        @await Html.PartialAsync("AdministratorEditUser", new AdministratorEditUser(ViewBag.User));
+    }
+    else
+    {
+        @await Html.PartialAsync("EditUser", new EditUser(ViewBag.User));
+    }
+</div>
